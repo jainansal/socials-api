@@ -6,7 +6,7 @@ import { generateToken } from "../config/generateToken.js"
 export const authLogin = async (req, res) => {
   try {
     const data = req.body
-    const user = await User.findOne({ username: data.username })
+    const user = await User.findOne({ email: data.email })
 
     if (!user) {
       return res.status(400).json({ msg: "No such username exists. Try signing up" })
@@ -35,7 +35,7 @@ export const authLogin = async (req, res) => {
 export const authRegister = async (req, res) => {
   try {
     const data = req.body
-    const userExists = await User.findOne({ username: data.username })
+    const userExists = await User.findOne({ email: data.email })
     // console.log(userExists)
 
     if (userExists) {
@@ -46,8 +46,10 @@ export const authRegister = async (req, res) => {
     const passwordHash = await bcrypt.hash(data.password, salt)
 
     const newUser = new User({
-      username: data.username,
-      password: passwordHash
+      email: data.email,
+      password: passwordHash,
+      firstName: data.firstName,
+      lastName: data.lastName
     })
 
     const savedUser = await newUser.save()

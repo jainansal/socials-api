@@ -6,26 +6,28 @@ import User from "../models/UserModel.js"
 export const createUser = async (req, res) => {
   try {
     const data = req.body
-    const userExists = await User.findOne({username: data.username})
+    const userExists = await User.findOne({ email: data.email })
     // console.log(userExists)
 
-    if(userExists) {
-      return res.status(400).json({msg: 'Username already exists'})
+    if (userExists) {
+      return res.status(400).json({ msg: 'Username already exists' })
     }
 
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(data.password, salt)
 
     const newUser = new User({
-      username: data.username,
-      password: passwordHash
+      email: data.email,
+      password: passwordHash,
+      firstName: data.firstName,
+      lastName: data.lastName
     })
 
     const savedUser = await newUser.save()
     const { password, ...info } = savedUser._doc
 
     res.status(200).json(info)
-  } catch(err) {
+  } catch (err) {
     res.status(500).send(`Error: ${err}`)
   }
 }
@@ -36,27 +38,27 @@ export const getUsers = async (req, res) => {
     const data = await User.find()
     const users = []
 
-    for(const user of data) {
-      const {password, ...info} = user._doc
+    for (const user of data) {
+      const { password, ...info } = user._doc
       users.push(info)
     }
     res.status(200).json(users)
-  } catch(err) {
+  } catch (err) {
     res.status(500).send(`Error: ${err}`)
   }
 }
 
 // /:id
-export const getUser = async(req, res) => {
+export const getUser = async (req, res) => {
   try {
     const { id } = req.params
     const givenUser = await User.findById(id)
 
-    if(!givenUser) {
-      return res.status(400).json({msg: "This user doesn't exist"})
+    if (!givenUser) {
+      return res.status(400).json({ msg: "This user doesn't exist" })
     }
 
-    const {password, ...info} = givenUser._doc
+    const { password, ...info } = givenUser._doc
 
     res.status(200).json(info)
   } catch (err) {
@@ -65,7 +67,7 @@ export const getUser = async(req, res) => {
 }
 
 // Update (/:id)
-export const updateUser = async(req, res) => {
+export const updateUser = async (req, res) => {
   try {
     const { id } = req.params
 
@@ -73,24 +75,25 @@ export const updateUser = async(req, res) => {
 
     console.log(userId)
 
-    if(userId !== id) {
-      return res.status(403).json({msg: "Unauthorized access"})
+    if (userId !== id) {
+      return res.status(403).json({ msg: "Unauthorized access" })
     }
 
     const data = req.body
     const givenUser = await User.findById(id)
 
-    if(!givenUser) {
-      return res.status(400).json({msg: "This user doesn't exist"})
+    if (!givenUser) {
+      return res.status(400).json({ msg: "This user doesn't exist" })
     }
-    
+
     // Updates only username and password
-    if(data.username) givenUser.username = data.username
-    if(data.password) givenUser.password = data.password
+    if(data.firstName) givenUser.firstName = data.firstName
+    if(data.lastName) givenUser.lastName = data.lastName
+    if (data.password) givenUser.password = data.password
 
-    givenUser.save()
+    await givenUser.save()
 
-    const {password, ...info} = givenUser._doc
+    const { password, ...info } = givenUser._doc
 
     res.status(200).json(info)
   } catch (err) {
@@ -99,28 +102,28 @@ export const updateUser = async(req, res) => {
 }
 
 // Delete
-export const deleteUser = async(req, res) => {
+export const deleteUser = async (req, res) => {
   try {
     const { id } = req.params
 
     const userId = req.user.id
 
-    if(userId !== id) {
-      return res.status(403).json({msg: "Unauthorized access"})
+    if (userId !== id) {
+      return res.status(403).json({ msg: "Unauthorized access" })
     }
-    
+
     const givenUser = await User.findById(id)
 
-    if(!givenUser) {
-      return res.status(400).json({msg: "This user doesn't exist"})
+    if (!givenUser) {
+      return res.status(400).json({ msg: "This user doesn't exist" })
     }
 
     const deleted = await User.deleteOne(givenUser)
 
-    if(deleted) {
-      res.status(200).json({msg: "User successfully deleted"})
+    if (deleted) {
+      res.status(200).json({ msg: "User successfully deleted" })
     } else {
-      res.status(400).json({msg: "Couldn't delete user"})
+      res.status(400).json({ msg: "Couldn't delete user" })
     }
 
   } catch (err) {

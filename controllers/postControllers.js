@@ -74,11 +74,12 @@ export const updatePost = async (req, res) => {
       return res.status(400).json({ msg: "This post doesn't exist" })
     }
 
-    if(givenPost.author !== authorId) {
+    const data = req.body
+    
+    if(givenPost.author !== authorId && data.content) {
       return res.status(403).json({msg: "Unauthorized access"})
     }
 
-    const data = req.body
     if (data.content) givenPost.content = data.content
     if (data.likes) givenPost.likes = data.likes
     if (data.comments) givenPost.comments = data.comments
