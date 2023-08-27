@@ -4,6 +4,7 @@ import express from "express"
 import cors from "cors"
 import dotenv from "dotenv"
 import cookieParser from "cookie-parser"
+import history from "connect-history-api-fallback"
 
 // Local imports
 
@@ -22,6 +23,7 @@ app.use(cors({
 }))
 app.use(express.json())
 app.use(cookieParser())
+app.use(history())
 
 // Routes
 
