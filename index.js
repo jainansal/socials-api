@@ -16,7 +16,10 @@ import { postRoutes } from "./router/postRoutes.js"
 
 const app = express()
 dotenv.config()
-app.use(cors())
+app.use(cors({
+  origin: ['http://social-media-jainansal.vercel.app', 'http://127.0.0.1:5173', 'https://s0cials.vercel.app', 'http://social-media-git-master-jainansal.vercel.app'],
+  credentials: true,
+}))
 app.use(express.json())
 app.use(cookieParser())
 

@@ -3,6 +3,31 @@ import bcrypt from "bcrypt"
 import User from "../models/UserModel.js"
 import { generateToken } from "../config/generateToken.js"
 
+export const authInit = async (req, res) => {
+  try {
+    const userId = req.user.id
+    const user = await User.findById(userId)
+
+    if (!user) {
+      return res.cookie('token', token, {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      }).status(400).json({ msg: "This user doesn't exist" })
+    }
+
+    const { password, ...info } = user._doc
+
+    res.status(200).json(info)
+  } catch (err) {
+    return res.cookie('token', token, {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true
+    }).status(400).json(`Error: ${err}`)
+  }
+}
+
 export const authLogin = async (req, res) => {
   try {
     const data = req.body
@@ -25,7 +50,7 @@ export const authLogin = async (req, res) => {
     res.cookie('token', token, {
       httpOnly: true,
       sameSite: 'none',
-      secure: false
+      secure: true
     }).json(info).status(200)
   } catch (err) {
     res.status(500).send(`Error: ${err}`)
@@ -60,7 +85,7 @@ export const authRegister = async (req, res) => {
     res.cookie('token', token, {
       httpOnly: true,
       sameSite: 'none',
-      secure: false
+      secure: true
     }).json(info).status(200)
   } catch (err) {
     res.status(500).send(`Error: ${err}`)
@@ -69,7 +94,11 @@ export const authRegister = async (req, res) => {
 
 export const authLogout = async (req, res) => {
   try {
-    return res.status(200).cookie('token', '').json({ msg: "Successfully logged out" })
+    return res.cookie('token', '', {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true
+    }).json({ msg: "Successfully logged out" }).status(200)
   } catch (err) {
     return res.status(500).json({ error: err })
   }
