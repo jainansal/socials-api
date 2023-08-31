@@ -90,6 +90,7 @@ export const updateUser = async (req, res) => {
     if (data.firstName) givenUser.firstName = data.firstName
     if (data.lastName) givenUser.lastName = data.lastName
     if (data.password) givenUser.password = data.password
+    if (data.following) givenUser.following = data.following
 
     await givenUser.save()
 

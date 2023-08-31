@@ -30,6 +30,10 @@ const UserSchema = new mongoose.Schema(
     posts: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Post'
+    }],
+    following: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
     }]
   }, {
   timestamps: true
