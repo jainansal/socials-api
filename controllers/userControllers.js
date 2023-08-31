@@ -86,9 +86,9 @@ export const updateUser = async (req, res) => {
       return res.status(400).json({ msg: "This user doesn't exist" })
     }
 
-    // Updates only username and password
-    if(data.firstName) givenUser.firstName = data.firstName
-    if(data.lastName) givenUser.lastName = data.lastName
+    if (data.profileImg) givenUser.profileImg = data.profileImg
+    if (data.firstName) givenUser.firstName = data.firstName
+    if (data.lastName) givenUser.lastName = data.lastName
     if (data.password) givenUser.password = data.password
 
     await givenUser.save()

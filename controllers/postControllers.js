@@ -63,8 +63,8 @@ export const updatePost = async (req, res) => {
   try {
     const authorId = req.user.id
 
-    if(!authorId) {
-      return res.status(403).json({msg: "Unauthorized access"})
+    if (!authorId) {
+      return res.status(403).json({ msg: "Unauthorized access" })
     }
 
     const { id } = req.params
@@ -75,11 +75,12 @@ export const updatePost = async (req, res) => {
     }
 
     const data = req.body
-    
-    if(givenPost.author !== authorId && data.content) {
-      return res.status(403).json({msg: "Unauthorized access"})
+
+    if (givenPost.author !== authorId && data.content) {
+      return res.status(403).json({ msg: "Unauthorized access" })
     }
 
+    if (data.likeCount) givenPost.likeCount = data.likeCount
     if (data.content) givenPost.content = data.content
     if (data.likes) givenPost.likes = data.likes
     if (data.comments) givenPost.comments = data.comments
@@ -101,8 +102,8 @@ export const deletePost = async (req, res) => {
   try {
     const authorId = req.user.id
 
-    if(!authorId) {
-      return res.status(403).json({msg: "Unauthorized access"})
+    if (!authorId) {
+      return res.status(403).json({ msg: "Unauthorized access" })
     }
 
     const { id } = req.params
@@ -112,8 +113,8 @@ export const deletePost = async (req, res) => {
       return res.status(400).json({ msg: "This post doesn't exist" })
     }
 
-    if(givenPost.author !== authorId) {
-      return res.status(403).json({msg: "Unauthorized access"})
+    if (givenPost.author !== authorId) {
+      return res.status(403).json({ msg: "Unauthorized access" })
     }
 
     const deleted = await Post.deleteOne(givenPost)
