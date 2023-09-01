@@ -52,7 +52,7 @@ export const getUsers = async (req, res) => {
 export const getUser = async (req, res) => {
   try {
     const { id } = req.params
-    const givenUser = await User.findById(id)
+    const givenUser = await User.findById(id).populate('following', ['firstName', 'lastName', 'profileImg'])
 
     if (!givenUser) {
       return res.status(400).json({ msg: "This user doesn't exist" })

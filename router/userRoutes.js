@@ -1,11 +1,12 @@
 import express from "express"
 
-import { 
-  createUser, 
-  getUsers, 
-  getUser, 
-  updateUser, 
-  deleteUser } from "../controllers/userControllers.js"
+import {
+  createUser,
+  getUsers,
+  getUser,
+  updateUser,
+  deleteUser,
+} from "../controllers/userControllers.js"
 import { verifyToken } from "../middleware/verifyToken.js"
 
 export const userRoutes = express.Router()
