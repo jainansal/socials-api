@@ -6,6 +6,7 @@ import {
   getUser,
   updateUser,
   deleteUser,
+  getUsersActivity
 } from "../controllers/userControllers.js"
 import { verifyToken } from "../middleware/verifyToken.js"
 
@@ -15,6 +16,8 @@ export const userRoutes = express.Router()
 userRoutes.post('/', createUser)
 
 // Get
+// Get user activity
+userRoutes.get('/activity', getUsersActivity);
 // Get single user
 userRoutes.get('/:id', getUser)
 // Get all users

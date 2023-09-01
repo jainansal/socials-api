@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt"
 
 import User from "../models/UserModel.js"
+import Post from "../models/PostModel.js"
 
 // Create
 export const createUser = async (req, res) => {
@@ -61,6 +62,36 @@ export const getUser = async (req, res) => {
     const { password, ...info } = givenUser._doc
 
     res.status(200).json(info)
+  } catch (err) {
+    res.status(500).send(`Error: ${err}`)
+  }
+}
+
+// /activity
+export const getUsersActivity = async (req, res) => {
+  try {
+    const data = await User.find()
+    const activity = []
+
+    for (const user of data) {
+      const recentPost = user.posts[0]
+      if (recentPost) {
+        const post = await Post.findById(recentPost);
+        activity.push({
+          userId: user._id,
+          fullName: user.firstName + ' ' + user.lastName,
+          time: post.updatedAt
+        })
+      }
+    }
+
+    activity.sort((a, b) => {
+      const d1 = new Date(a.time)
+      const d2 = new Date(b.time)
+      return d2 - d1
+    })
+
+    res.status(200).json(activity);
   } catch (err) {
     res.status(500).send(`Error: ${err}`)
   }
