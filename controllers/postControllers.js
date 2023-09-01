@@ -23,7 +23,7 @@ export const createPost = async (req, res) => {
     if (!savedPost) {
       return res.status(400).json({ msg: "Some error occurred while saving the post" })
     }
-    currentUser.posts.push(savedPost._id)
+    currentUser.posts.unshift(savedPost._id)
     currentUser.save()
 
     return res.status(200).json(savedPost)
@@ -35,7 +35,7 @@ export const createPost = async (req, res) => {
 // Get
 export const getPosts = async (req, res) => {
   try {
-    const posts = await Post.find().populate('author', ['firstName', 'lastName', 'profileImg'])
+    const posts = await Post.find().populate('author', ['firstName', 'lastName', 'profileImg']).sort({ updatedAt: -1 })
     res.status(200).json(posts)
   } catch (err) {
     res.status(500).send(`Error: ${err}`)
