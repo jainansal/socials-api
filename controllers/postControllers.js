@@ -35,7 +35,7 @@ export const createPost = async (req, res) => {
 // Get
 export const getPosts = async (req, res) => {
   try {
-    const posts = await Post.find().populate('firstName', 'lastName', 'profileImg')
+    const posts = await Post.find().populate('author', ['firstName', 'lastName', 'profileImg'])
     res.status(200).json(posts)
   } catch (err) {
     res.status(500).send(`Error: ${err}`)
@@ -45,7 +45,7 @@ export const getPosts = async (req, res) => {
 export const getPost = async (req, res) => {
   try {
     const { id } = req.params
-    const givenPost = await Post.findById(id).populate('firstName', 'lastName', 'profileImg')
+    const givenPost = await Post.findById(id).populate('author', ['firstName', 'lastName', 'profileImg'])
 
     if (!givenPost) {
       return res.status(400).json({ msg: "This post doesn't exist" })
