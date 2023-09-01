@@ -35,7 +35,7 @@ export const createPost = async (req, res) => {
 // Get
 export const getPosts = async (req, res) => {
   try {
-    const posts = await Post.find().populate('author', ['firstName', 'lastName', 'profileImg']).sort({ updatedAt: -1 })
+    const posts = await Post.find().populate('author', ['firstName', 'lastName', 'profileImg']).sort({ createdAt: -1 })
     res.status(200).json(posts)
   } catch (err) {
     res.status(500).send(`Error: ${err}`)
@@ -92,6 +92,37 @@ export const updatePost = async (req, res) => {
     } else {
       res.status(200).json(updatedPost)
     }
+  } catch (err) {
+    res.status(500).send(`Error: ${err}`)
+  }
+}
+
+export const toggleLike = async (req, res) => {
+  try {
+    const authorId = req.user.id
+
+    if (!authorId) {
+      return res.status(403).json({ msg: "Unauthorized access" })
+    }
+
+    const { id } = req.params
+    const givenPost = await Post.findById(id)
+
+    if (!givenPost) {
+      return res.status(400).json({ msg: "This post doesn't exist" })
+    }
+
+    if (givenPost.likes.includes(authorId)) {
+      givenPost.likes = givenPost.likes.filter(item => JSON.stringify(item) !== JSON.stringify(authorId))
+    } else {
+      givenPost.likes.unshift(authorId);
+    }
+    givenPost.likeCount = givenPost.likes.length
+
+
+    const updatedPost = await givenPost.save()
+
+    res.status(200).json({ msg: 'ok' })
   } catch (err) {
     res.status(500).send(`Error: ${err}`)
   }

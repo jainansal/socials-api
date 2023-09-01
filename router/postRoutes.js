@@ -5,7 +5,8 @@ import {
   getPosts,
   getPost, 
   updatePost, 
-  deletePost
+  deletePost,
+  toggleLike
 } from "../controllers/postControllers.js"
 import { verifyToken } from "../middleware/verifyToken.js"
 
@@ -20,7 +21,10 @@ postRoutes.get('/', getPosts)
 // // Get one post
 postRoutes.get('/:id', getPost)
 
-// // Update
+// Update
+// Likes/comments
+postRoutes.put('/likecomment/:id', verifyToken, toggleLike);
+// Basic update
 postRoutes.put('/:id', verifyToken, updatePost)
 
 // // Delete

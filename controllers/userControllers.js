@@ -80,7 +80,7 @@ export const getUsersActivity = async (req, res) => {
         activity.push({
           userId: user._id,
           fullName: user.firstName + ' ' + user.lastName,
-          time: post.updatedAt
+          time: post.createdAt
         })
       }
     }
