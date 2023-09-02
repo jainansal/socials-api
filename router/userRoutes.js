@@ -6,7 +6,8 @@ import {
   getUser,
   updateUser,
   deleteUser,
-  getUsersActivity
+  getUsersActivity,
+  updateFollowing
 } from "../controllers/userControllers.js"
 import { verifyToken } from "../middleware/verifyToken.js"
 
@@ -24,6 +25,9 @@ userRoutes.get('/:id', getUser)
 userRoutes.get('/', getUsers)
 
 // Update
+// Update following
+userRoutes.put('/following', verifyToken, updateFollowing);
+// Basic update
 userRoutes.put('/:id', verifyToken, updateUser)
 
 // Delete

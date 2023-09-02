@@ -133,6 +133,36 @@ export const updateUser = async (req, res) => {
   }
 }
 
+// Update following : /following
+export const updateFollowing = async (req, res) => {
+  try {
+    const userId = req.user.id
+    const curUser = await User.findById(userId)
+    const newUser = await User.findById(req.body.newUser)
+
+    if (!curUser) {
+      return res.cookie('token', '').status(401).json({ msg: "You're not a user!" })
+    }
+    if (!newUser) {
+      return res.status(404).json({ msg: 'New user not found.' })
+    }
+
+    if (curUser.following.includes(req.body.newUser)) {
+      curUser.following = curUser.following.filter((item) => JSON.stringify(item) !== JSON.stringify(req.body.newUser))
+    } else {
+      curUser.following.unshift(req.body.newUser)
+    }
+
+    await curUser.save()
+
+    const followingData = curUser.following
+
+    res.status(200).json(followingData)
+  } catch (err) {
+    res.status(500).send(`Error: ${err}`)
+  }
+}
+
 // Delete
 export const deleteUser = async (req, res) => {
   try {
