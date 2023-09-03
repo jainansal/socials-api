@@ -11,6 +11,7 @@ import { connectDB } from "./config/db.js"
 import { userRoutes } from "./router/userRoutes.js"
 import { authRoutes } from "./router/authRoutes.js"
 import { postRoutes } from "./router/postRoutes.js"
+import { newsRoutes } from "./router/newsRoutes.js"
 
 // Configurations
 
@@ -28,6 +29,7 @@ app.use(cookieParser())
 app.use('/api/auth', authRoutes)
 app.use('/api/user', userRoutes)
 app.use('/api/post', postRoutes)
+app.use('/api/news', newsRoutes)
 
 // Database Connection
 
