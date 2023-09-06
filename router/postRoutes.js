@@ -1,31 +1,29 @@
 import express from "express"
 
-import {
-  createPost,
-  getPosts,
-  getPost, 
-  updatePost, 
-  deletePost,
-  toggleLike
-} from "../controllers/postControllers.js"
 import { verifyToken } from "../middleware/verifyToken.js"
 
 export const postRoutes = express.Router()
 
-// Create
-postRoutes.post('/', verifyToken, createPost)
+// New post
+postRoutes.post('/', verifyToken, newPost);
 
-// Get
 // Get all posts
-postRoutes.get('/', getPosts)
-// // Get one post
-postRoutes.get('/:id', getPost)
+postRoutes.get('/all', verifyToken, getAllPosts);
 
-// Update
-// Likes/comments
-postRoutes.put('/likecomment/:id', verifyToken, toggleLike);
-// Basic update
-postRoutes.put('/:id', verifyToken, updatePost)
+// Get Trending Posts
+postRoutes.get('/trending', verifyToken, getTrendingPosts);
 
-// // Delete
-postRoutes.delete('/:id', verifyToken, deletePost)
+// Get Friends' Posts
+postRoutes.get('/friends', verifyToken, getFriendsPosts);
+
+// Get comments
+postRoutes.get('/comments/:id', verifyToken, getPostComments);
+
+// Update likes
+postRoutes.put('/likes/:id', verifyToken, updateLikes);
+
+// Add comment
+postRoutes.put('/comments/:id', verifyToken, updateComments);
+
+// Delete post
+postRoutes.delete('/', verifyToken, deletePost);
