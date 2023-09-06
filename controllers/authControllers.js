@@ -9,97 +9,75 @@ export const authInit = async (req, res) => {
     const user = await User.findById(userId)
 
     if (!user) {
-      return res.cookie('token', token, {
-        httpOnly: true,
-        sameSite: 'none',
-        secure: true
-      }).status(400).json({ msg: "This user doesn't exist" })
+      res.status(404);
+      throw new Error('Authorization error');
     }
 
-    const { password, ...info } = user._doc
-
-    res.status(200).json(info)
+    res.status(200).json("Authorized");
   } catch (err) {
-    return res.cookie('token', token, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true
-    }).status(400).json(`Error: ${err}`)
+    res.cookie('token', '');
+    res.status(500).json({ message: err.message });
   }
 }
 
 export const authLogin = async (req, res) => {
   try {
     const data = req.body
-    const user = await User.findOne({ email: data.email })
+    const user = await User.findOne({ username: data.username })
 
     if (!user) {
-      return res.status(400).json({ msg: "No such username exists. Try signing up" })
+      res.status(404)
+      throw new Error("No such username exists. Try signing up.")
     }
 
     const passMatch = await bcrypt.compare(data.password, user.password)
 
     if (!passMatch) {
-      return res.status(400).json({ msg: "Wrong password! Try again" })
+      res.status(400)
+      throw new Error("Wrong password! Try again.")
     }
 
     const token = await generateToken(user._id)
 
-    const { password, ...info } = user._doc
-
-    res.cookie('token', token, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true
-    }).json(info).status(200)
+    res.status(200).cookie('token', token).json("Logged in successfully!");
   } catch (err) {
-    res.status(500).send(`Error: ${err}`)
+    res.status(500).json({ message: err.message });
   }
 }
 
 export const authRegister = async (req, res) => {
   try {
     const data = req.body
-    const userExists = await User.findOne({ email: data.email })
-    // console.log(userExists)
+    const userExists = await User.findOne({ username: data.username })
 
     if (userExists) {
-      return res.status(400).json({ msg: 'Username already exists' })
+      res.status(400)
+      throw new Error("Username already exists. Try logging in or choose a different username.")
     }
 
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(data.password, salt)
 
     const newUser = new User({
-      email: data.email,
+      username: data.username,
       password: passwordHash,
-      firstName: data.firstName,
-      lastName: data.lastName
+      name: data.name,
     })
 
-    const savedUser = await newUser.save()
-    const { password, ...info } = savedUser._doc
+    await newUser.save()
 
-    const token = await generateToken(savedUser._id)
+    const token = await generateToken(newUser._id)
 
-    res.cookie('token', token, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true
-    }).json(info).status(200)
+    res.status(200).cookie('token', token).json("Registered successfully!")
   } catch (err) {
-    res.status(500).send(`Error: ${err}`)
+    res.status(500).json({ message: err.message });
   }
 }
 
 export const authLogout = async (req, res) => {
   try {
-    return res.cookie('token', '', {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true
-    }).json({ msg: "Successfully logged out" }).status(200)
+    res.status(200).cookie('token', '').json("Logged out successfully!")
   } catch (err) {
-    return res.status(500).json({ error: err })
+    return res.status(500).json({ message: err.message })
   }
 }

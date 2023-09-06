@@ -1,6 +1,6 @@
 import express from "express"
 
-import { 
+import {
   authLogin,
   authRegister,
   authLogout,
@@ -14,10 +14,10 @@ export const authRoutes = express.Router()
 authRoutes.get('/init', verifyToken, authInit);
 
 // Login
-authRoutes.post('/login', authLogin)
+authRoutes.post('/login', authLogin);
 
 // Register
-authRoutes.post('/register', authRegister)
+authRoutes.post('/register', authRegister);
 
 // Logout
-authRoutes.post('/logout', authLogout)
+authRoutes.post('/logout', authLogout);
