@@ -1,5 +1,16 @@
 import express from "express"
 
+import {
+  newPost,
+  getAllPosts,
+  getTrendingPosts,
+  getFriendsPosts,
+  getUserPosts,
+  getPostComments,
+  updateLikes,
+  addComment,
+  deletePost
+} from "../controllers/postControllers.js";
 import { verifyToken } from "../middleware/verifyToken.js"
 
 export const postRoutes = express.Router()
@@ -16,6 +27,9 @@ postRoutes.get('/trending', verifyToken, getTrendingPosts);
 // Get Friends' Posts
 postRoutes.get('/friends', verifyToken, getFriendsPosts);
 
+// Get User posts
+postRoutes.get('/:id', verifyToken, getUserPosts);
+
 // Get comments
 postRoutes.get('/comments/:id', verifyToken, getPostComments);
 
@@ -23,7 +37,7 @@ postRoutes.get('/comments/:id', verifyToken, getPostComments);
 postRoutes.put('/likes/:id', verifyToken, updateLikes);
 
 // Add comment
-postRoutes.put('/comments/:id', verifyToken, updateComments);
+postRoutes.post('/comments/:id', verifyToken, addComment);
 
 // Delete post
-postRoutes.delete('/', verifyToken, deletePost);
+postRoutes.delete('/:id', verifyToken, deletePost);

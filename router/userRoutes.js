@@ -1,5 +1,10 @@
 import express from "express"
 
+import {
+  getAllUsers,
+  userBasicDetails,
+  getUserFriends
+} from "../controllers/userControllers.js";
 import { verifyToken } from "../middleware/verifyToken.js"
 
 export const userRoutes = express.Router()
