@@ -12,6 +12,7 @@ import { userRoutes } from "./router/userRoutes.js"
 import { authRoutes } from "./router/authRoutes.js"
 import { postRoutes } from "./router/postRoutes.js"
 import { newsRoutes } from "./router/newsRoutes.js"
+import { friendRoutes } from "./router/friendRoutes.js"
 
 // Configurations
 
@@ -30,6 +31,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/user', userRoutes)
 app.use('/api/post', postRoutes)
 app.use('/api/news', newsRoutes)
+app.use('/api/friends', friendRoutes)
 
 // Database Connection
 
