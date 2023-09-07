@@ -1,6 +1,13 @@
 import express from "express";
 
-import { verifyToken } from "../middleware/verifyToken";
+import {
+  getRequestsReceived,
+  getRequestsSent,
+  sendRequest,
+  respondRequest,
+  unfriendUser
+} from "../controllers/friendControllers.js";
+import { verifyToken } from "../middleware/verifyToken.js";
 
 export const friendRoutes = express.Router();
 
