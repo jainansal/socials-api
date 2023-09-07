@@ -11,10 +11,10 @@ friendRoutes.get('/received', verifyToken, getRequestsReceived);
 friendRoutes.get('/sent', verifyToken, getRequestsSent);
 
 // Send request
-friendRoutes.put('/send/:id', verifyToken, sendRequest);
+friendRoutes.post('/send/:id', verifyToken, sendRequest);
 
-// Accept request
-friendRoutes.put('/accept/:id', verifyToken, acceptRequest);
+// Accept/Reject request
+friendRoutes.post('/respond/:id', verifyToken, respondRequest);
 
-// Reject request
-friendRoutes.put('/reject/:id', verifyToken, rejectRequest);
+// Unfriend a user
+friendRoutes.put('/unfriend/:id', verifyToken, unfriendUser);
