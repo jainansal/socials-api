@@ -11,7 +11,11 @@ export const getAllUsers = async (req, res) => {
 
     if (!user) {
       res.status(404);
-      res.cookie('token', '');
+      res.cookie('token', '', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      });
       throw new Error('User not found.');
     }
 
@@ -35,7 +39,11 @@ export const userBasicDetails = async (req, res) => {
 
     if (!user) {
       res.status(404);
-      res.cookie('token', '');
+      res.cookie('token', '', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      });
       throw new Error('User not found.');
     }
 
@@ -62,7 +70,11 @@ export const getUserFriends = async (req, res) => {
 
     if (!user) {
       res.status(404);
-      res.cookie('token', '');
+      res.cookie('token', '', {
+        secure: true,
+        sameSite: 'none',
+        secure: true
+      });
       throw new Error('User not found.');
     }
 

@@ -7,7 +7,11 @@ export const getRequestsReceived = async (req, res) => {
 
     if (!currentUser) {
       res.status(404);
-      res.cookie('token', '');
+      res.cookie('token', '', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      });
       throw new Error("User not found.")
     }
 
@@ -29,7 +33,11 @@ export const getRequestsSent = async (req, res) => {
 
     if (!currentUser) {
       res.status(404);
-      res.cookie('token', '');
+      res.cookie('token', '', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      });
       throw new Error("User not found.")
     }
 
@@ -46,7 +54,11 @@ export const sendRequest = async (req, res) => {
 
     if (!currentUser) {
       res.status(404);
-      res.cookie('token', '');
+      res.cookie('token', '', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      });
       throw new Error("User not found.")
     }
 
@@ -77,7 +89,11 @@ export const respondRequest = async (req, res) => {
 
     if (!currentUser) {
       res.status(404);
-      res.cookie('token', '');
+      res.cookie('token', '', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      });
       throw new Error("User not found.")
     }
 
@@ -130,7 +146,11 @@ export const unfriendUser = async (req, res) => {
 
     if (!currentUser) {
       res.status(404);
-      res.cookie('token', '');
+      res.cookie('token', '', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      });
       throw new Error("User not found.")
     }
 

@@ -15,7 +15,11 @@ export const authInit = async (req, res) => {
 
     res.status(200).json("Authorized");
   } catch (err) {
-    res.cookie('token', '');
+    res.cookie('token', '', {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true
+    });
     res.status(500).json({ message: err.message });
   }
 }
@@ -39,7 +43,11 @@ export const authLogin = async (req, res) => {
 
     const token = await generateToken(user._id)
 
-    res.status(200).cookie('token', token).json("Logged in successfully!");
+    res.status(200).cookie('token', token, {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true
+    }).json("Logged in successfully!");
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -68,7 +76,11 @@ export const authRegister = async (req, res) => {
 
     const token = await generateToken(newUser._id)
 
-    res.status(200).cookie('token', token).json("Registered successfully!")
+    res.status(200).cookie('token', token, {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true
+    }).json("Registered successfully!")
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -76,7 +88,11 @@ export const authRegister = async (req, res) => {
 
 export const authLogout = async (req, res) => {
   try {
-    res.status(200).cookie('token', '').json("Logged out successfully!")
+    res.status(200).cookie('token', '', {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true
+    }).json("Logged out successfully!")
   } catch (err) {
     return res.status(500).json({ message: err.message })
   }

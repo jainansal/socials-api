@@ -9,7 +9,11 @@ export const newPost = async (req, res) => {
 
     if (!currentUser) {
       res.status(404);
-      res.cookie('token', '');
+      res.cookie('token', '', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      });
       throw new Error("User not found.")
     }
 
@@ -89,7 +93,11 @@ export const getFriendsPosts = async (req, res) => {
 
     if (!currentUser) {
       res.status(404);
-      res.cookie('token', '');
+      res.cookie('token', '', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      });
       throw new Error('User not found.');
     }
 
@@ -132,7 +140,11 @@ export const getUserPosts = async (req, res) => {
 
     if (!user) {
       res.status(404);
-      res.cookie('token', '');
+      res.cookie('token', '', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      });
       throw new Error('User not found.');
     }
 
@@ -165,7 +177,11 @@ export const getPostComments = async (req, res) => {
 
     if (!user) {
       res.status(404);
-      res.cookie('token', '');
+      res.cookie('token', '', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      });
       throw new Error('User not found.');
     }
 
@@ -198,7 +214,11 @@ export const updateLikes = async (req, res) => {
 
     if (!currentUser) {
       res.status(404);
-      res.cookie('token', '');
+      res.cookie('token', '', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      });
       throw new Error('User not found.');
     }
 
@@ -236,7 +256,11 @@ export const addComment = async (req, res) => {
 
     if (!currentUser) {
       res.status(404);
-      res.cookie('token', '');
+      res.cookie('token', '', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      });
       throw new Error('User not found.');
     }
 
@@ -274,7 +298,11 @@ export const deletePost = async (req, res) => {
 
     if (!currentUser) {
       res.status(404);
-      res.cookie('token', '');
+      res.cookie('token', '', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      });
       throw new Error('User not found.');
     }
 
@@ -286,7 +314,7 @@ export const deletePost = async (req, res) => {
       throw new Error('Post not found.');
     }
 
-    if(JSON.stringify(post.author) !== JSON.stringify(userId)) {
+    if (JSON.stringify(post.author) !== JSON.stringify(userId)) {
       res.status(404);
       throw new Error('Unauthorized access.')
     }
