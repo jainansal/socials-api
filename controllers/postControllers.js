@@ -68,7 +68,7 @@ export const getTrendingPosts = async (req, res) => {
 
   try {
     const posts = await Post.find()
-      .sort({ likeCount: -1 })
+      .sort({ likeCount: -1, createdAt: -1 })
       .skip((page - 1) * perPage)
       .limit(perPage)
       .populate({
@@ -104,7 +104,7 @@ export const getFriendsPosts = async (req, res) => {
     const friends = currentUser.friends;
 
     const posts = []
-    for (const friend in friends) {
+    for (const friend of friends) {
       const friendPosts = await Post.find({ author: friend })
         .sort({ createdAt: -1 })
         .populate({
@@ -151,7 +151,7 @@ export const getUserPosts = async (req, res) => {
     const posts = user.posts;
     const data = [];
 
-    for (const post in posts) {
+    for (const post of posts) {
       const details = await Post.findById(post)
         .populate({
           path: 'author',
