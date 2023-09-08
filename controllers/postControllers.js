@@ -234,8 +234,10 @@ export const updateLikes = async (req, res) => {
 
     if (postLikes.includes(userId)) {
       postLikes = postLikes.filter(item => JSON.stringify(item) !== JSON.stringify(userId));
+      post.likeCount--;
     } else {
       postLikes.unshift(userId);
+      post.likeCount++;
     }
 
     post.likes = postLikes;
