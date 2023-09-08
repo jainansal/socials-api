@@ -16,14 +16,16 @@ const UserSchema = new mongoose.Schema(
       required: true
     },
     pfp: {
-      type: String
+      type: String,
+      default: 'https://exploringbits.com/wp-content/uploads/2022/01/Manga-PFP-1.jpg?ezimgfmt=ng%3Awebp%2Fngcb3%2Frs%3Adevice%2Frscb3-1'
     },
     posts: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Post'
     }],
     bio: {
-      type: String
+      type: String,
+      default: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore, tenetur.'
     },
     friends: [{
       type: mongoose.Schema.Types.ObjectId,

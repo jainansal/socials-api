@@ -13,7 +13,9 @@ export const authInit = async (req, res) => {
       throw new Error('Authorization error');
     }
 
-    res.status(200).json("Authorized");
+    res.status(200).json({
+      id: userId
+    });
   } catch (err) {
     res.cookie('token', '', {
       httpOnly: true,
