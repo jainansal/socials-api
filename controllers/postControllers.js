@@ -230,8 +230,7 @@ export const updateLikes = async (req, res) => {
       throw new Error('Post not found.');
     }
 
-    const postLikes = post.likes;
-
+    let postLikes = post.likes;
 
     if (postLikes.includes(userId)) {
       postLikes = postLikes.filter(item => JSON.stringify(item) !== JSON.stringify(userId));
