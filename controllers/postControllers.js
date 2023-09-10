@@ -1,5 +1,6 @@
 import Post from "../models/PostModel.js"
 import User from "../models/UserModel.js"
+import Comment from "../models/CommentModel.js";
 
 // Create
 export const newPost = async (req, res) => {
@@ -172,7 +173,7 @@ export const getPostComments = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const perPage = 10;
   try {
-    const id = req.params.id;
+    const id = req.user.id;
     const user = await User.findById(id);
 
     if (!user) {
