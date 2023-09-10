@@ -95,3 +95,32 @@ export const getUserFriends = async (req, res) => {
     res.status(500).json({ message: err.message })
   }
 }
+
+export const updateBasicDetails = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const user = await User.findById(id);
+
+    if (!user) {
+      res.status(404);
+      res.cookie('token', '', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      });
+      throw new Error('User not found.');
+    }
+
+    const data = req.body;
+
+    if (data.name) user.name = data.name;
+    if (data.bio) user.bio = data.bio;
+    if (data.pfp) user.pfp = data.pfp;
+
+    await user.save();
+
+    res.status(200).json("User updated successfully");
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+  }
+}

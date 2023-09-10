@@ -3,7 +3,8 @@ import express from "express"
 import {
   getAllUsers,
   userBasicDetails,
-  getUserFriends
+  getUserFriends,
+  updateBasicDetails
 } from "../controllers/userControllers.js";
 import { verifyToken } from "../middleware/verifyToken.js"
 
@@ -17,3 +18,6 @@ userRoutes.get('/basic/:id', verifyToken, userBasicDetails);
 
 // Get user friends
 userRoutes.get('/friends/:id', verifyToken, getUserFriends);
+
+// Update user basic details
+userRoutes.put('/basic', verifyToken, updateBasicDetails);
