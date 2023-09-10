@@ -2,16 +2,22 @@ import Post from "../models/PostModel.js"
 import User from "../models/UserModel.js"
 
 // Create
-export const createPost = async (req, res) => {
+export const newPost = async (req, res) => {
   try {
-
-    const authorId = req.user.id
-    const { content } = req.body
-    const currentUser = await User.findById(authorId)
+    const authorId = req.user.id;
+    const currentUser = await User.findById(authorId);
 
     if (!currentUser) {
-      return res.status(400).json({ msg: "This user doesn't exist" })
+      res.status(404);
+      res.cookie('token', '', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      });
+      throw new Error("User not found.")
     }
+
+    const { content } = req.body
 
     const newPost = new Post({
       content,
@@ -21,141 +27,303 @@ export const createPost = async (req, res) => {
     const savedPost = await newPost.save()
 
     if (!savedPost) {
-      return res.status(400).json({ msg: "Some error occurred while saving the post" })
+      res.status(500);
+      throw new Error("Couldn't save the post.")
     }
+
     currentUser.posts.unshift(savedPost._id)
     currentUser.save()
 
     return res.status(200).json(savedPost)
   } catch (err) {
-    res.status(500).send(`Error: ${err}`)
+    res.status(500).json({ message: err.message })
   }
 }
 
 // Get
-export const getPosts = async (req, res) => {
+export const getAllPosts = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const perPage = 10;
+
   try {
-    const posts = await Post.find().populate('author', ['firstName', 'lastName', 'profileImg']).sort({ createdAt: -1 })
-    res.status(200).json(posts)
+    const posts = await Post.find()
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * perPage)
+      .limit(perPage)
+      .populate({
+        path: 'author',
+        select: "name pfp"
+      })
+      .select("-comments")
+
+    res.status(200).json(posts);
   } catch (err) {
-    res.status(500).send(`Error: ${err}`)
+    res.status(500).json({ message: err.message })
   }
 }
 
-export const getPost = async (req, res) => {
+export const getTrendingPosts = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const perPage = 10;
+
   try {
-    const { id } = req.params
-    const givenPost = await Post.findById(id).populate('author', ['firstName', 'lastName', 'profileImg'])
+    const posts = await Post.find()
+      .sort({ likeCount: -1, createdAt: -1 })
+      .skip((page - 1) * perPage)
+      .limit(perPage)
+      .populate({
+        path: 'author',
+        select: "name pfp"
+      })
+      .select("-comments")
 
-    if (!givenPost) {
-      return res.status(400).json({ msg: "This post doesn't exist" })
-    }
-
-    res.status(200).json(givenPost)
+    res.status(200).json(posts);
   } catch (err) {
-    res.status(500).send(`Error: ${err}`)
+    res.status(500).json({ message: err.message })
   }
 }
 
-
-// Update
-export const updatePost = async (req, res) => {
+export const getFriendsPosts = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const perPage = 10;
   try {
-    const authorId = req.user.id
 
-    if (!authorId) {
-      return res.status(403).json({ msg: "Unauthorized access" })
+    const userId = req.user.id;
+    const currentUser = await User.findById(userId);
+
+    if (!currentUser) {
+      res.status(404);
+      res.cookie('token', '', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      });
+      throw new Error('User not found.');
     }
 
-    const { id } = req.params
-    const givenPost = await Post.findById(id)
+    const friends = currentUser.friends;
 
-    if (!givenPost) {
-      return res.status(400).json({ msg: "This post doesn't exist" })
+    const posts = []
+    for (const friend of friends) {
+      const friendPosts = await Post.find({ author: friend })
+        .sort({ createdAt: -1 })
+        .populate({
+          path: 'author',
+          select: 'name pfp'
+        })
+        .select("-comments")
+      posts.push(friendPosts)
     }
 
-    const data = req.body
+    console.log(posts)
 
-    if (givenPost.author !== authorId && data.content) {
-      return res.status(403).json({ msg: "Unauthorized access" })
+    posts.sort((a, b) => {
+      return a.createdAt > b.createdAt
+    });
+
+    console.log(posts);
+
+    const data = posts.slice(perPage * (page - 1), perPage * page);
+
+    res.status(200).json(data);
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+  }
+}
+
+export const getUserPosts = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const perPage = 10;
+  try {
+    const id = req.params.id;
+    const user = await User.findById(id);
+
+    if (!user) {
+      res.status(404);
+      res.cookie('token', '', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      });
+      throw new Error('User not found.');
     }
 
-    if (data.likeCount) givenPost.likeCount = data.likeCount
-    if (data.content) givenPost.content = data.content
-    if (data.likes) givenPost.likes = data.likes
-    if (data.comments) givenPost.comments = data.comments
+    const posts = user.posts;
+    const data = [];
 
-    const updatedPost = await givenPost.save()
+    for (const post of posts) {
+      const details = await Post.findById(post)
+        .populate({
+          path: 'author',
+          select: 'name pfp'
+        })
+        .select("-comments")
 
-    if (!updatedPost) {
-      res.status(400).json({ msg: "Some error occurred while updating" })
+      data.push(details);
+    }
+
+    res.status(200).json(data);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+}
+
+export const getPostComments = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const perPage = 10;
+  try {
+    const id = req.params.id;
+    const user = await User.findById(id);
+
+    if (!user) {
+      res.status(404);
+      res.cookie('token', '', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      });
+      throw new Error('User not found.');
+    }
+
+    const postId = req.params.id;
+    const postComments = await Post.findById(postId)
+      .select("comments")
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'author',
+          select: 'name'
+        }
+      })
+
+    if (!postComments) {
+      res.status(404);
+      throw new Error("Post not found.")
+    }
+
+    res.status(200).json(postComments);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+}
+
+export const updateLikes = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const currentUser = await User.findById(userId);
+
+    if (!currentUser) {
+      res.status(404);
+      res.cookie('token', '', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      });
+      throw new Error('User not found.');
+    }
+
+    const postId = req.params.id;
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      res.status(404);
+      throw new Error('Post not found.');
+    }
+
+    let postLikes = post.likes;
+
+    if (postLikes.includes(userId)) {
+      postLikes = postLikes.filter(item => JSON.stringify(item) !== JSON.stringify(userId));
+      post.likeCount--;
     } else {
-      res.status(200).json(updatedPost)
+      postLikes.unshift(userId);
+      post.likeCount++;
     }
+
+    post.likes = postLikes;
+
+    await post.save();
+
+    res.status(200).json(post.likes);
   } catch (err) {
-    res.status(500).send(`Error: ${err}`)
+    res.status(500).json({ message: err.message });
   }
 }
 
-export const toggleLike = async (req, res) => {
+export const addComment = async (req, res) => {
   try {
-    const authorId = req.user.id
+    const userId = req.user.id;
+    const currentUser = await User.findById(userId);
 
-    if (!authorId) {
-      return res.status(403).json({ msg: "Unauthorized access" })
+    if (!currentUser) {
+      res.status(404);
+      res.cookie('token', '', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      });
+      throw new Error('User not found.');
     }
 
-    const { id } = req.params
-    const givenPost = await Post.findById(id)
+    const postId = req.params.id;
+    const post = await Post.findById(postId);
 
-    if (!givenPost) {
-      return res.status(400).json({ msg: "This post doesn't exist" })
+    if (!post) {
+      res.status(404);
+      throw new Error('Post not found.');
     }
 
-    if (givenPost.likes.includes(authorId)) {
-      givenPost.likes = givenPost.likes.filter(item => JSON.stringify(item) !== JSON.stringify(authorId))
-    } else {
-      givenPost.likes.unshift(authorId);
-    }
-    givenPost.likeCount = givenPost.likes.length
+    const { content } = req.body;
 
+    const comment = new Comment({
+      content,
+      author: userId
+    });
 
-    const updatedPost = await givenPost.save()
+    await comment.save();
 
-    res.status(200).json({ msg: 'ok' })
+    post.comments.unshift(comment._id);
+
+    await post.save();
+
+    res.status(200).json(post.comments);
   } catch (err) {
-    res.status(500).send(`Error: ${err}`)
+    res.status(500).json({ message: err.message });
   }
 }
 
-// Delete
 export const deletePost = async (req, res) => {
   try {
-    const authorId = req.user.id
+    const userId = req.user.id;
+    const currentUser = await User.findById(userId);
 
-    if (!authorId) {
-      return res.status(403).json({ msg: "Unauthorized access" })
+    if (!currentUser) {
+      res.status(404);
+      res.cookie('token', '', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      });
+      throw new Error('User not found.');
     }
 
-    const { id } = req.params
-    const givenPost = await Post.findById(id)
+    const postId = req.params.id;
+    const post = await Post.findById(postId);
 
-    if (!givenPost) {
-      return res.status(400).json({ msg: "This post doesn't exist" })
+    if (!post) {
+      res.status(404);
+      throw new Error('Post not found.');
     }
 
-    if (givenPost.author !== authorId) {
-      return res.status(403).json({ msg: "Unauthorized access" })
+    if (JSON.stringify(post.author) !== JSON.stringify(userId)) {
+      res.status(404);
+      throw new Error('Unauthorized access.')
     }
 
-    const deleted = await Post.deleteOne(givenPost)
+    await Post.deleteOne(post);
 
-    if (deleted) {
-      res.status(200).json({ msg: "Post successfully deleted" })
-    } else {
-      res.status(400).json({ msg: "Couldn't delete post" })
-    }
+    res.status(200).json("Post successfully deleted!");
   } catch (err) {
-    res.status(500).send(`Error: ${err}`)
+    res.status(500).json({ message: err.message });
   }
 }

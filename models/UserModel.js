@@ -2,20 +2,12 @@ import mongoose from "mongoose"
 
 const UserSchema = new mongoose.Schema(
   {
-    /*
-      To-do:
-        1. Add validators
-    */
-    email: {
+    username: {
       type: String,
       required: true,
       unique: true
     },
-    firstName: {
-      type: String,
-      required: true
-    },
-    lastName: {
+    name: {
       type: String,
       required: true
     },
@@ -23,15 +15,27 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    profileImg: {
+    pfp: {
       type: String,
-      default: 'https://www.mintface.xyz/content/images/2021/08/QmTndiF423kjdXsNzsip1QQkBQqDuzDhJnGuJAXtv4XXiZ-1.png',
+      default: 'https://exploringbits.com/wp-content/uploads/2022/01/Manga-PFP-1.jpg?ezimgfmt=ng%3Awebp%2Fngcb3%2Frs%3Adevice%2Frscb3-1'
     },
     posts: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Post'
     }],
-    following: [{
+    bio: {
+      type: String,
+      default: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore, tenetur.'
+    },
+    friends: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }],
+    requestsReceived: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }],
+    requestsSent: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
     }]
