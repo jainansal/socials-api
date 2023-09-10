@@ -5,6 +5,7 @@ import {
   authRegister,
   authLogout,
   authInit,
+  authDelete
 } from "../controllers/authControllers.js"
 import { verifyToken } from "../middleware/verifyToken.js"
 
@@ -21,3 +22,6 @@ authRoutes.post('/register', authRegister);
 
 // Logout
 authRoutes.post('/logout', authLogout);
+
+// Delete account
+authRoutes.delete('/', verifyToken, authDelete);
