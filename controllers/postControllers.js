@@ -197,12 +197,16 @@ export const getPostComments = async (req, res) => {
         }
       })
 
+    console.log(postComments)
+
     if (!postComments) {
       res.status(404);
       throw new Error("Post not found.")
     }
 
-    res.status(200).json(postComments);
+    const data = postComments.comments.slice(perPage * (page - 1), perPage * page);
+    
+    res.status(200).json(data);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -287,7 +291,15 @@ export const addComment = async (req, res) => {
 
     await post.save();
 
-    res.status(200).json(post.comments);
+    const data = await post.populate({
+      path: 'comments',
+      populate: {
+        path: 'author',
+        select: 'name'
+      }
+    })
+
+    res.status(200).json(data.comments);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
