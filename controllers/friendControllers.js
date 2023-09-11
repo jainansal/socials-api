@@ -83,9 +83,9 @@ export const sendRequest = async (req, res) => {
 export const respondRequest = async (req, res) => {
   try {
     const authorId = req.user.id;
-    const currentUser = await User.findById(authorId);
+    const receiver = await User.findById(authorId);
 
-    if (!currentUser) {
+    if (!receiver) {
       res.status(404);
       res.cookie('token', '', {
         httpOnly: true,
@@ -95,40 +95,40 @@ export const respondRequest = async (req, res) => {
       throw new Error("User not found.")
     }
 
-    const receiverId = req.params.id;
-    const receiveUser = await User.findById(receiverId);
+    const senderId = req.params.id;
+    const sender = await User.findById(senderId);
 
-    if (!receiveUser) {
+    if (!sender) {
       res.status(404);
       throw new Error("User not found.")
     }
 
-    if (!currentUser.requestsSent.includes(receiverId) || !receiveUser.requestsReceived.includes(authorId)) {
-      currentUser.requestsSent = currentUser.requestsSent.filter(item => JSON.stringify(item) !== JSON.stringify(receiverId));
-      await currentUser.save();
+    if (!sender.requestsSent.includes(authorId) || !receiver.requestsReceived.includes(senderId)) {
+      sender.requestsSent = sender.requestsSent.filter(item => JSON.stringify(item) !== JSON.stringify(authorId));
+      await sender.save();
 
-      receiveUser.requestsReceived = receiveUser.requestsReceived.filter(item => JSON.stringify(item) !== JSON.stringify(authorId));
-      await receiveUser.save();
+      receiver.requestsReceived = receiver.requestsReceived.filter(item => JSON.stringify(item) !== JSON.stringify(senderId));
+      await receiver.save();
 
-      throw new Error("Requests don't align.");
+      throw new Error("Requests don't align");
     }
 
     const { action } = req.body;
 
     if (action === 'accept') {
-      currentUser.requestsSent = currentUser.requestsSent.filter(item => JSON.stringify(item) !== JSON.stringify(receiverId));
-      currentUser.friends.unshift(receiverId);
-      await currentUser.save();
+      sender.requestsSent = sender.requestsSent.filter(item => JSON.stringify(item) !== JSON.stringify(authorId));
+      sender.friends.unshift(authorId);
+      await sender.save();
 
-      receiveUser.requestsReceived = receiveUser.requestsReceived.filter(item => JSON.stringify(item) !== JSON.stringify(authorId));
-      receiveUser.friends.unshift(authorId);
-      await receiveUser.save();
+      receiver.requestsReceived = receiver.requestsReceived.filter(item => JSON.stringify(item) !== JSON.stringify(senderId));
+      receiver.friends.unshift(senderId);
+      await receiver.save();
     } else if (action === 'reject') {
-      currentUser.requestsSent = currentUser.requestsSent.filter(item => JSON.stringify(item) !== JSON.stringify(receiverId));
-      await currentUser.save();
+      sender.requestsSent = sender.requestsSent.filter(item => JSON.stringify(item) !== JSON.stringify(authorId));
+      await sender.save();
 
-      receiveUser.requestsReceived = receiveUser.requestsReceived.filter(item => JSON.stringify(item) !== JSON.stringify(authorId));
-      await receiveUser.save();
+      receiver.requestsReceived = receiver.requestsReceived.filter(item => JSON.stringify(item) !== JSON.stringify(senderId));
+      await receiver.save();
     }
 
     res.status(200).json("Request responded successfully");
