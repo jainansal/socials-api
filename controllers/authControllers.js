@@ -2,6 +2,8 @@ import bcrypt from "bcrypt"
 
 import User from "../models/UserModel.js"
 import { generateToken } from "../config/generateToken.js"
+import Post from "../models/PostModel.js"
+import Comment from "../models/CommentModel.js"
 
 export const authInit = async (req, res) => {
   try {
@@ -109,7 +111,16 @@ export const authDelete = async (req, res) => {
       res.status(404);
       throw new Error('Authorization error');
     }
-
+    
+    const friends = user.friends;
+    for (const id of friends) {
+      const curUser = await User.findById(id);
+      curUser.friends = curUser.friends.filter(item => JSON.stringify(item) !== JSON.stringify(userId));
+      await curUser.save();
+    }
+    
+    await Post.deleteMany({ author: userId });
+    await Comment.deleteMany({ author: userId });
     await User.findByIdAndDelete(userId);
 
     res.status(200).json("User successfully deleted!");
