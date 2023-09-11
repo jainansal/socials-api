@@ -3,7 +3,10 @@ import User from "../models/UserModel.js";
 export const getRequestsReceived = async (req, res) => {
   try {
     const authorId = req.user.id;
-    const currentUser = await User.findById(authorId);
+    const currentUser = await User.findById(authorId).populate({
+      path: 'requestsReceived',
+      select: "name pfp"
+    })
 
     if (!currentUser) {
       res.status(404);
@@ -14,11 +17,6 @@ export const getRequestsReceived = async (req, res) => {
       });
       throw new Error("User not found.")
     }
-
-    currentUser.populate({
-      path: 'requestsReceived',
-      select: "name pfp"
-    })
 
     res.status(200).json(currentUser.requestsReceived)
   } catch (err) {
