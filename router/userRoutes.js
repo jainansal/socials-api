@@ -3,6 +3,7 @@ import express from "express"
 import {
   getAllUsers,
   userBasicDetails,
+  userAdvancedDetails,
   getUserFriends,
   updateBasicDetails
 } from "../controllers/userControllers.js";
@@ -15,6 +16,9 @@ userRoutes.get('/all', verifyToken, getAllUsers);
 
 // Basic user details (name, username, bio, pfp)
 userRoutes.get('/basic/:id', verifyToken, userBasicDetails);
+
+// Advanced user details (friends, requests rec, sent) (only id)
+userRoutes.get('/advanced', verifyToken, userAdvancedDetails);
 
 // Get user friends
 userRoutes.get('/friends/:id', verifyToken, getUserFriends);
