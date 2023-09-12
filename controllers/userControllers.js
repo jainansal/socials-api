@@ -152,3 +152,31 @@ export const updateBasicDetails = async (req, res) => {
     res.status(500).json({ message: err.message })
   }
 }
+
+export const searchUser = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const user = await User.findById(id);
+
+    if (!user) {
+      res.status(404);
+      res.cookie('token', '', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true
+      });
+      throw new Error('User not found.');
+    }
+
+    const { name } = req.params;
+
+    const response = await User.find({
+      "name": { $regex: name, $options: "i" }
+    })
+      .select("name pfp")
+
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+  }
+}

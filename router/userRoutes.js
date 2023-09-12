@@ -5,7 +5,8 @@ import {
   userBasicDetails,
   userAdvancedDetails,
   getUserFriends,
-  updateBasicDetails
+  updateBasicDetails,
+  searchUser
 } from "../controllers/userControllers.js";
 import { verifyToken } from "../middleware/verifyToken.js"
 
@@ -25,3 +26,6 @@ userRoutes.get('/friends/:id', verifyToken, getUserFriends);
 
 // Update user basic details
 userRoutes.put('/basic', verifyToken, updateBasicDetails);
+
+// Search user
+userRoutes.get('/search/:name', verifyToken, searchUser);
