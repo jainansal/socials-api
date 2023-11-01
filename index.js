@@ -1,47 +1,55 @@
 // Libraries from npm
 
-import express from "express"
-import cors from "cors"
-import dotenv from "dotenv"
-import cookieParser from "cookie-parser"
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 
 // Local imports
 
-import { connectDB } from "./config/db.js"
-import { userRoutes } from "./router/userRoutes.js"
-import { authRoutes } from "./router/authRoutes.js"
-import { postRoutes } from "./router/postRoutes.js"
-import { friendRoutes } from "./router/friendRoutes.js"
+import { connectDB } from "./config/db.js";
+import { userRoutes } from "./router/userRoutes.js";
+import { authRoutes } from "./router/authRoutes.js";
+import { postRoutes } from "./router/postRoutes.js";
+import { friendRoutes } from "./router/friendRoutes.js";
 
 // Configurations
 
-const app = express()
-dotenv.config()
-app.use(cors({
-  origin: ['http://social-media-jainansal.vercel.app', 'http://127.0.0.1:5173', 'https://s0cials.vercel.app', 'http://social-media-git-master-jainansal.vercel.app'],
-  credentials: true,
-}))
-app.use(express.json())
-app.use(cookieParser())
+const app = express();
+dotenv.config();
+app.use(
+  cors({
+    origin: [
+      "http://social-media-jainansal.vercel.app",
+      "http://127.0.0.1:5173",
+      "https://s0cials.vercel.app",
+      "http://social-media-git-master-jainansal.vercel.app",
+      "http://localhost:5173",
+    ],
+    credentials: true,
+  })
+);
+app.use(express.json());
+app.use(cookieParser());
 
 // Routes
 
-app.use('/api/auth', authRoutes)
-app.use('/api/user', userRoutes)
-app.use('/api/post', postRoutes)
-app.use('/api/friends', friendRoutes)
+app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/post", postRoutes);
+app.use("/api/friends", friendRoutes);
 
 // Database Connection
 
-await connectDB()
+await connectDB();
 
 // Ports
 
-const PORT = process.env.PORT || 7000
+const PORT = process.env.PORT || 7000;
 app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`)
-})
+  console.log(`Listening on port ${PORT}`);
+});
 
-app.get('/', (req, res) => {
-  res.send('Server up and running')
-})
+app.get("/", (req, res) => {
+  res.send("Server up and running");
+});
